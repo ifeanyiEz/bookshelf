@@ -132,6 +132,30 @@ def create_app(test_config=None):
 
     # @TODO: Write error handler decorators to handle AT LEAST status codes 400, 404, and 422.
 
+    @app.errorhandler(400)
+    def bad_request(error):
+        return jsonify({
+            "success": False,
+            "error": 400,
+            "message": "The server could not understand the request due to invalid syntax"
+        }), 400
+
+    @app.errorhandler(404)
+    def not_found(error):
+        return jsonify({
+            "success": False,
+            "error": 404,
+            "message": "The server can not find the requested resource"
+        }), 404
+
+    @app.errorhandler(422)
+    def unprocessable(error):
+        return jsonify({
+            "success": False,
+            "error": 422,
+            "message": "The request was unable to be followed due to semantic errors"
+        }), 422
+
     # TEST: Practice writing curl requests. Write some requests that you know will error in expected ways.
     #       Make sure they are returning as expected. Do the same for other misformatted requests or requests missing data.
     #       If you find any error responses returning as HTML, write new error handlers for them.
