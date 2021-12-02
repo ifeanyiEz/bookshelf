@@ -38,7 +38,7 @@ def create_app(test_config=None):
             "Access-Control-Allow-Headers", "Content-Type,Authorization,true"
         )
         response.headers.add(
-            "Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS"
+            "Access-Control-Allow-Methods", "GET,PATCH,PUT,POST,DELETE,OPTIONS"
         )
         return response
 
@@ -107,7 +107,8 @@ def create_app(test_config=None):
 
         try:
             book = Book.query.filter(Book.id == book_id).one_or_none()
-
+            print('kkkkkkkkkkkkkkkk')
+            print(book)
             if book is None:
                 abort(404)
 
@@ -123,7 +124,7 @@ def create_app(test_config=None):
         except:
             abort(422)
 
-    # @TODO: Write a route that create a new book.
+    # DONE: Write a route that create a new book.
     #        Response body keys: 'success', 'created'(id of created book), 'books' and 'total_books'
     # TEST: When completed, you will be able to a new book using the form. Try doing so from the last page of books.
     #       Your new book should show up immediately after you submit it at the end of the page.
@@ -152,5 +153,33 @@ def create_app(test_config=None):
 
         except:
             abort(422)
+
+#__________________HANDLING ERRORS_____________________#
+
+    @app.errorhandler(400)
+    def bad_request(error):
+        return jsonify({
+            "success": False,
+            "error": 400,
+            "message": "The server could not understand the request due to invalid syntax"
+        }), 400
+
+    @app.errorhandler(404)
+    def not_found(error):
+        return jsonify({
+            "success": False,
+            "error": 404,
+            "message": "The server can not find the requested resource"
+        }), 404
+
+    @app.errorhandler(422)
+    def unprocessable(error):
+        return jsonify({
+            "success": False,
+            "error": 422,
+            "message": "The request was unable to be followed due to semantic errors"
+        }), 422
+    
+
 
     return app
