@@ -73,13 +73,9 @@ def create_app(test_config=None):
     def edit_rating(book_id):
 
         body = request.get_json()
-        print('aaaaaaaaaaaaaaaaa')
-        print(body)
 
         try:
             book = Book.query.filter(Book.id == book_id).one_or_none()
-            print('bbbbbbbbbbbbbbbbb')
-            print(book)
             if book is None:
                 abort(404)
 
@@ -107,8 +103,7 @@ def create_app(test_config=None):
 
         try:
             book = Book.query.filter(Book.id == book_id).one_or_none()
-            print('kkkkkkkkkkkkkkkk')
-            print(book)
+
             if book is None:
                 abort(404)
 
@@ -133,8 +128,6 @@ def create_app(test_config=None):
     def create_new_book():
 
         body = request.get_json()
-        print('cccccccccccccccccc')
-        print(body)
 
         title = body.get('title')
         author = body.get('author')
@@ -171,6 +164,14 @@ def create_app(test_config=None):
             "error": 404,
             "message": "The server can not find the requested resource"
         }), 404
+
+    @app.errorhandler(405)
+    def not_allowed(error):
+        return jsonify({
+            "success": False,
+            "error": 405,
+            "message": "This method is not allowed for the requested URL"
+        }), 405
 
     @app.errorhandler(422)
     def unprocessable(error):
