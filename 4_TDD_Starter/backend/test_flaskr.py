@@ -16,7 +16,7 @@ class BookTestCase(unittest.TestCase):
         self.client = self.app.test_client
         self.database_name = "bookshelf_test"
         self.database_path = "postgresql://{}:{}@{}/{}".format(
-            "student", "student", "localhost:5432", self.database_name
+            "ezugworie", "E2u8w0r1e", "localhost:5432", self.database_name
         )
         setup_db(self.app, self.database_path)
 
@@ -50,8 +50,30 @@ class BookTestCase(unittest.TestCase):
         self.assertEqual(data["success"], False)
         self.assertEqual(data["message"], "resource not found")
 
-    # @TODO: Write tests for search - at minimum two
+    # DONE: Write tests for search - at minimum two
     #        that check a response when there are results and when there are none
+
+    def test_successful_search_found_book(self):
+        '''Creating a successful book-search test before implementing search feature'''
+        resp = self.client().post('/books', json={"search": "Code"})
+        data = json.loads(resp.data)
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['total_books'])
+        self.assertTrue(len(data['books']))
+        self.assertEqual(len(data['books']), 3)
+
+    def test_successful_search_no_book(self):
+        '''Creating a book_not_found search test before implementing search feature'''
+        resp = self.client().post('/books', json={"search": "Ezechitoke"})
+        data = json.loads(resp.data)
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(data["success"], True)
+        self.assertEqual(data["total_books"], 0)
+        self.assertEqual(len(data["books"]), 0)
+
 
     def test_update_book_rating(self):
         res = self.client().patch("/books/5", json={"rating": 1})
