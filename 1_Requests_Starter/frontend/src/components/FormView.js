@@ -53,7 +53,7 @@ class FormView extends Component {
   render() {
     return (
       <div id="form-view">
-        <div className="search" style={{'display': 'None'}}>
+        <div className="search" style={{'display': 'Inline'}}>
           <h2>Search</h2>
           <form className="FormView" id="search-form" onSubmit={this.handleSearch}>
             <input type="text" name="search" onChange={this.handleChange}/>
