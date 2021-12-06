@@ -42,12 +42,17 @@ def create_app(test_config=None):
         )
         return response
 
+
+#____________________Retrieve All Books_________________________#
+
+
     # DONE: Write a route that retrivies all books, paginated.
     #         You can use the constant above to paginate by eight books.
     #         If you decide to change the number of books per page,
     #         update the frontend to handle additional books in the styling and pagination
     #         Response body keys: 'success', 'books' and 'total_books'
     # TEST: When completed, the webpage will display books including title, author, and rating shown as stars
+
 
     @app.route('/books', methods=['GET'])
     def get_books():
@@ -62,6 +67,10 @@ def create_app(test_config=None):
             'books': current_books,
             'total_books': len(Book.query.all())
         })
+
+
+#____________________Edit Single Book Rating_________________________#
+
 
     # DONE: Write a route that will update a single book's rating.
     #         It should only be able to update the rating, not the entire representation
@@ -92,6 +101,10 @@ def create_app(test_config=None):
         except:
             abort(400)
 
+
+#____________________Delete Single Book_________________________#
+
+
     # DONE: Write a route that will delete a single book.
     #        Response body keys: 'success', 'deleted'(id of deleted book), 'books' and 'total_books'
     #        Response body keys: 'success', 'books' and 'total_books'
@@ -119,6 +132,10 @@ def create_app(test_config=None):
         except:
             abort(422)
 
+
+#____________________Search or Create A New Book_________________________#
+
+
     # DONE: Write a route that create a new book.
     #        Response body keys: 'success', 'created'(id of created book), 'books' and 'total_books'
     # TEST: When completed, you will be able to a new book using the form. Try doing so from the last page of books.
@@ -129,23 +146,39 @@ def create_app(test_config=None):
 
         body = request.get_json()
 
-        title = body.get('title')
-        author = body.get('author')
-        rating = body.get('rating')
+        title = body.get('title', None)
+        author = body.get('author', None)
+        rating = body.get('rating', None)
+        search = body.get(('search').strip(), None)
 
         try:
-            new_book = Book(title = title, author = author, rating = rating)
-            new_book.insert()
+            if search:
+                selection = Book.query.order_by(Book.id).filter(Book.title.ilike('%{}%'.format(search)))
+                current_books = paginate_books(request, selection)
+                print('00000000000000000000000')
+                print(current_books)
 
-            return jsonify({
-                'success': True,
-                'created': new_book.id,
-                'books': paginate_books(request, Book.query.order_by(Book.id).all()),
-                'total_books': len(Book.query.all())
-            })
+                return jsonify({
+                    'success': True,
+                    'books': current_books,
+                    'total_books': len(selection.all())
+                })
+
+            else:    
+                new_book = Book(title = title, author = author, rating = rating)
+                new_book.insert()
+
+                return jsonify({
+                    'success': True,
+                    'created': new_book.id,
+                    'books': paginate_books(request, Book.query.order_by(Book.id).all()),
+                    'total_books': len(Book.query.all())
+                })
 
         except:
             abort(422)
+
+
 
 #__________________HANDLING ERRORS_____________________#
 
